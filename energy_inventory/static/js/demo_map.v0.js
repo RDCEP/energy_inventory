@@ -76,7 +76,10 @@
       .enter()
       .append('path')
       .attr('class', 'site')
-      .attr('d', path);
+      .style('fill', 'blue')
+      .attr('d', function(d) {
+        return path.pointRadius(d.properties.PADD)(d);
+      });
 
   }
 
