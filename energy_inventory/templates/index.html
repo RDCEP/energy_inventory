@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block headcss %}
+  <link rel=stylesheet
+        href="../static/css/main.0.1.css"
+        media=all>
+{% endblock %}
+
+{% block headjs %}
+  <script src="../static/js/vendor/d3.v3.min.js"></script>
+  <script src="../static/js/vendor/queue.v1.min.js"></script>
+{% endblock %}
+
+{% block main %}
+  <div id=map_wrap></div>
+{% endblock %}
+
+{% block bodyjs %}
+<script src={{ url_for('energy_inventory.static', filename='js/demo_map.v0.js') }}></script>
+{% endblock %}
