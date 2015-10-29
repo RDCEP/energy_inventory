@@ -9,6 +9,7 @@
 {% block headjs %}
   <script src="../static/js/vendor/d3.v3.min.js"></script>
   <script src="../static/js/vendor/queue.v1.min.js"></script>
+  <script src="../static/js/d3.legend.js"></script>
 {% endblock %}
 
 {% block main %}
@@ -16,5 +17,5 @@
 {% endblock %}
 
 {% block bodyjs %}
-<script src={{ url_for('energy_inventory.static', filename='js/demo_map.v0.js') }}></script>
+<script src={{ url_for('energy_inventory.static', filename='js/LNG_refineries_processing.js') }}></script>
 {% endblock %}
