@@ -35,6 +35,7 @@
     , grid_layer = svg.append('g').attr('id', 'grid_layer')
     , land_layer = svg.append('g').attr('id', 'land_layer')
     , feature_layer = svg.append('g').attr('id', 'feature_layer')
+    , feature_layer2 = svg.append('g').attr('id', 'feature_layer2')
   ;
 
   svg.selectAll('g').attr('class', 'graph-layer');
@@ -50,7 +51,7 @@
     var lng = queued_data[1];
     var petroleum = queued_data[2];
     var nat_gas = queued_data[3];
-
+    var ng_storage = queued_data[4];
 
     // On the ocean_layer <g> draw the sphere of the earth and color
     // it blue
@@ -72,9 +73,18 @@
       .attr('d', path)
       .style('fill', '#FCFCFC');
 
-    // draw points 
+    // draw points
+    var ng_storage_art = feature_layer.selectAll('path') //Natural Gas Storage
+      .data(ng_storage.features)
+      .enter()
+      .append('path')
+      .attr('transform', function(d) {
+        return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
+      })
+      .attr('d', d3.svg.symbol().type("circle").size(6))
+      .style('fill', '#286699'); 
 
-    var lng_art = feature_layer.selectAll('path') //was .site previous to the addition of symbol, plus 'class,'site' line below
+    var lng_art = feature_layer2.selectAll('path') 
       .data(lng.features)
       .enter()
       .append('path')
@@ -82,24 +92,20 @@
         return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
       })
       .attr('d', d3.svg.symbol().type("triangle-up").size(44))
-      //.attr('class', 'site')
-      //.attr('data-legend', "LNG Import/Export Terminal")
-      .style('fill', '#286699');  //d3.rgb(19, 19, 70).brighter(2)
-      //.attr('d', path);
+      .attr('data-legend', "LNG Import/Export Terminal")
+      .style('fill', '#286699');
       
 
-    var petroleum_art = feature_layer.selectAll('path')
+    var petroleum_art = feature_layer2.selectAll('path')
       .data(petroleum.features)
       .enter()
       .append('path')
       .attr('transform', function(d) {
         return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
       })
-      .attr('d', d3.svg.symbol().type("square").size(30))
-      //.attr('class', 'site')
-      //.attr('data-legend', "Petroleum Refinery")
+      .attr('d', d3.svg.symbol().type("square").size(20))
+      .attr('data-legend', "Petroleum Refinery")
       .style('fill', '#ff9944');
-      //.attr('d', path);
 
     var ng_art = feature_layer.selectAll('.site')
       .data(nat_gas.features)
@@ -108,30 +114,31 @@
       .attr('transform', function(d) {
         return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
       })
-      .attr('d', d3.svg.symbol().type("square").size(10))
-      //.attr('class', 'site')
+      .attr('d', d3.svg.symbol().type("square").size(20))
       //.attr('data-legend',"Natural Gas Processing Plant")
       .style('fill', '#44aaff');
-      //.attr('d', path);
-
+    
+   // "LNG Import/Export Terminal", "Petroleum Refinery", "Natural Gas Processing Plant", "Natural Gas Storage"
+   //'#286699', '#ff9944', '#44aaff', '#286699'
 
     //susie lu's legend work
     
+             
     var triangleU = d3.svg.symbol().type('triangle-up')(),
       circle = d3.svg.symbol().type('circle')(),
-      square = d3.svg.symbol().type('square')(),
+      cross = d3.svg.symbol().type('cross')(),
       diamond = d3.svg.symbol().type('diamond')(),
-      triangleD = d3.svg.symbol().type('triangle-down')();
+      square = d3.svg.symbol().type('square')();
 
     //example output of d3.svg.symbol().type('circle')();
     //"M0,4.51351666838205A4.51351666838205,4.51351666838205 0 1,1 0,
     //-4.51351666838205A4.51351666838205,4.51351666838205 0 1,1 0,4.51351666838205Z"
 
     var symbolScale =  d3.scale.ordinal()
-      .domain(["LNG Import/Export Terminal", "Petroleum Refinery", "Natural Gas Processing Plant"])
-      .range([triangleU, square, square]);
+      .domain(["LNG Import/Export Terminal", "Petroleum Refinery", "Natural Gas Processing Plant", "Natural Gas Storage"])
+      .range([triangleU, square, square, circle] );
 
-    var symbolColorScale = ['#286699', '#ff9944', '#44aaff'];
+    var symbolColorScale = ['#286699', '#ff9944', '#44aaff', '#286699'];
 
     var svg = d3.select("svg");
 
@@ -139,32 +146,32 @@
     var rectangle = svg.append("rect")
       .attr("x", 10)
       .attr("y", 10)
-      .attr("width", 179)
-      .attr("height", 58)
+      .attr("width", 176)
+      .attr("height", 68)
       .style('fill', '#FCFCFC')
-      .attr("transform", "translate(758,398)");
+      .attr("transform", "translate(761,387)");
 
     svg.append("g")
       .attr("class", "legendSymbol")
       .style('font-family', 'sans-serif')
       .style('font-size', '10px')
       .style('fill', '#545454')
-      .attr("transform", "translate(782,421)");
+      .attr("transform", "translate(785,410)");
 
     var legendPath = d3.legend.symbol()
       .scale(symbolScale)
       .orient("vertical")
-      .shapePadding(4)
-      .labelOffset(0);
+      .shapePadding(3)
+      .labelOffset(1);
       //.title("Symbol Legend Title")
       //.on("cellclick", function(d){alert("clicked " + d);});
-
 
     svg.select(".legendSymbol")
       .call(legendPath);
 
     var swatches = d3.selectAll('.legendCells .swatch');
       swatches.style('fill', function(d, i) { return symbolColorScale[i]; });
+   
   }
 
   // load multiple files asynchronously and pass them to the map()
@@ -175,6 +182,7 @@
     .defer(d3.json, '/static/json/LNG_ImpExp_Terminals_US_2013.geojson')
     .defer(d3.json, '/static/json/Petroleum_Refineries_US_2015.geojson')
     .defer(d3.json, '/static/json/NaturalGas_ProcessingPlants_US_2014.geojson')
+    .defer(d3.json, '/static/json/NaturalGas_UndergroundStorage_US_July2014.geojson')
     .awaitAll(map);
 
 })();

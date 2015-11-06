@@ -47,7 +47,7 @@
     // to draw the map and its various features.
 
     var map_data = queued_data[0];
-    var sites = queued_data[1];
+    var coal = queued_data[1];
 
     // On the ocean_layer <g> draw the sphere of the earth and color
     // it blue
@@ -57,7 +57,7 @@
       .attr('id', 'sphere')
       .attr('d', path)
       .attr('class', 'boundary')
-      .style('fill', '#6DCFF6');
+      .style('fill', '#C2C2C2');
 
     // draw the US on the land_layer <g>.
 
@@ -67,19 +67,69 @@
       .append('path')
       .attr('class', 'map-boundary boundary')
       .attr('d', path)
-      .style('fill', '#6DBF67');
+      .style('fill', '#FCFCFC');
 
-    // draw points for each biodiesel site
+    // draw points 
 
-    var site_art = feature_layer.selectAll('.site')
-      .data(sites.features)
+    var coal_art = feature_layer.selectAll('path') //was .site previous to the addition of symbol, plus 'class,'site' line below
+      .data(coal.features)
       .enter()
       .append('path')
-      .attr('class', 'site')
-      .style('fill', 'blue')
-      .attr('d', function(d) {
-        return path.pointRadius(d.properties.PADD)(d);
-      });
+      .attr('transform', function(d) {
+        return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
+      })
+      .attr('d', d3.svg.symbol().type("diamond").size(10))
+      //.attr('class', 'site')
+      //.attr('data-legend', "Coal Mines")
+      //.style('stroke', '#040d14')
+      //.style('fill', 'none');       //this line and the previous define a symbol outline with no fill!
+      .style('fill', '#040d14');
+      //.attr('d', path);
+
+    
+    //susie lu's legend work
+    
+    var diamond = d3.svg.symbol().type('diamond')();
+
+    var symbolScale =  d3.scale.ordinal()
+      .domain(["Coal Mines"])
+      .range([diamond]);
+
+    var symbolColorScale = ['#040d14'];
+
+    var svg = d3.select("svg");
+
+    //create a background box for the legend
+        var rectangle = svg.append("rect")
+      .attr("x", 10)
+      .attr("y", 10)
+      .attr("width", 109)
+      .attr("height", 35)
+      .style('fill', '#FCFCFC')
+      .attr("transform", "translate(828,421)");
+
+    svg.append("g")
+      .attr("class", "legendSymbol")
+      .style('font-family', 'sans-serif')
+      .style('font-size', '10px')
+      .style('fill', '#545454')
+      .attr("transform", "translate(855,448)");
+
+    var legendPath = d3.legend.symbol()
+      .scale(symbolScale)
+      .orient("vertical")
+      .shapePadding(1)
+      .labelOffset(1);
+      //.title("Symbol Legend Title")
+      //.on("cellclick", function(d){alert("clicked " + d);});
+
+    svg.select(".legendSymbol")
+      .call(legendPath);
+
+    var swatches = d3.selectAll('.legendCells .swatch');
+      swatches.style('fill', function(d, i) { return symbolColorScale[i]; });
+   
+
 
   }
 
@@ -88,7 +138,7 @@
 
   queue()
     .defer(d3.json, '/static/json/gz_2010_us_040_00_20m.json')
-    .defer(d3.json, '/static/json/biodiesel.json')
+    .defer(d3.json, '/static/json/CoalMines_US_2013.geojson')
     .awaitAll(map);
 
 })();
