@@ -98,7 +98,9 @@
       .attr('d', d3.svg.symbol().type("square").size(30))
       //.attr('class', 'site')
       //.attr('data-legend', "Petroleum Refinery")
-      .style('fill', '#ff9944');
+      .style('fill', '#ff9944')
+      .style('stroke','black')
+      .style('stroke-width', '0.2');
       //.attr('d', path);
 
     var ng_art = feature_layer.selectAll('.site')
@@ -111,7 +113,9 @@
       .attr('d', d3.svg.symbol().type("square").size(10))
       //.attr('class', 'site')
       //.attr('data-legend',"Natural Gas Processing Plant")
-      .style('fill', '#44aaff');
+      .style('fill', '#44aaff')
+      .style('stroke','black')
+      .style('stroke-width', '0.2');
       //.attr('d', path);
 
 

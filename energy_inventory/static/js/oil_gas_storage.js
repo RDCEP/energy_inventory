@@ -79,7 +79,7 @@
       .attr('transform', function(d) {
         return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
       })
-      .attr('d', d3.svg.symbol().type("circle").size(60))
+      .attr('d', d3.svg.symbol().type("circle").size(90))
       .style('fill', '#a0602a');
 
     var ng_storage_art = feature_layer.selectAll('path') 

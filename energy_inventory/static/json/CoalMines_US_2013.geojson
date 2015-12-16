@@ -3,7 +3,9 @@
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
                                                                                 
 "features": [
+
 { "type": "Feature", "properties": { "msha_id": 100347, "namemsha": "Choctaw Mine", "county": "Walker", "tot_prod": 537429, "notes": null, "year": 2013 }, "geometry": { "type": "Point", "coordinates": [ -87.266899999932377, 33.688900000064791 ] } },
+
 { "type": "Feature", "properties": { "msha_id": 100515, "namemsha": "Mary Lee # 1 Mine", "county": "Walker", "tot_prod": 8400, "notes": "Refuse coal is included", "year": 2013 }, "geometry": { "type": "Point", "coordinates": [ -87.254200000229503, 33.655300000198068 ] } },
 { "type": "Feature", "properties": { "msha_id": 100759, "namemsha": "North River #1 Underground Mine", "county": "Fayette", "tot_prod": 1440115, "notes": null, "year": 2013 }, "geometry": { "type": "Point", "coordinates": [ -87.606900000204433, 33.610599999757092 ] } },
 { "type": "Feature", "properties": { "msha_id": 100851, "namemsha": "Oak Grove Mine", "county": "Jefferson", "tot_prod": 2269014, "notes": null, "year": 2013 }, "geometry": { "type": "Point", "coordinates": [ -87.138900000125858, 33.442199999662179 ] } },
