@@ -1,5 +1,5 @@
-<!-- Transition between the actual two bar graphs, switching activity and energy source -->
-<!-- 1/13/16 havent done this yet, still the same as index.html -->
+<!-- Static three panel energy inventory summary, by activity -->
+<!-- state is a relic of the code this is modified from, change if you put into website -->
 
 
 <!DOCTYPE html>
@@ -43,7 +43,7 @@ var y = d3.scale.linear()
     .rangeRound([height, 0]);
 
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+     .range(["#ff8c1a", "#ffd9b3", "#ff3300", "#ccff99", "#80007f", "#ffff1a", "#ff8c00"]);
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -60,37 +60,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var highlight_transition = function highlight_transition(d) {
-  
-d3.csv("data_foo.csv", function(error, data) {
-    color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
-
-    data.forEach(function(d) {
-      var y0 = 0;
-      d.ages = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
-      d.total = d.ages[d.ages.length - 1].y1;
-
-    });
-
-    data.sort(function(a, b) { return b.total - a.total; });
-
-    x.domain(data.map(function(d) { return d.State; }));
-    y.domain([0, d3.max(data, function(d) { return d.total; })]);
-    
-    state.data(data).enter();
-    bars.data(function(d) { return d.ages; });
-    bars.enter();
-    bars.transition()
-    .attr("y", function(d) { return y(d.y1); })
-      .attr("height", function(d) { return y(d.y0) - y(d.y1); });
-
-    yAxis.transition().scale(y); //redo
-
-  });
-  
-};
-
-d3.csv("data.csv", function(error, data) {
+d3.csv("data_by_service_life.csv", function(error, data) {
   if (error) throw error;
 
   color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
@@ -101,7 +71,7 @@ d3.csv("data.csv", function(error, data) {
     d.total = d.ages[d.ages.length - 1].y1;
   });
 
-  data.sort(function(a, b) { return b.total - a.total; });
+  //data.sort(function(a, b) { return b.total - a.total; });   //we want the age groups in their given order
 
   x.domain(data.map(function(d) { return d.State; }));
   y.domain([0, d3.max(data, function(d) { return d.total; })]);
@@ -148,8 +118,8 @@ d3.csv("data.csv", function(error, data) {
       .attr("x", width - 18)
       .attr("width", 18)
       .attr("height", 18)
-      .style("fill", color)
-      .on('click', highlight_transition);
+      .style("fill", color);
+      //.on('click', highlight_transition);
 
   legend.append("text")
       .attr("x", width - 24)

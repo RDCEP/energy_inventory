@@ -1,5 +1,6 @@
-<!-- Transition between the actual two bar graphs, switching activity and energy source -->
-<!-- 1/13/16 havent done this yet, still the same as index.html -->
+<!-- Static three panel energy inventory summary, by activity -->
+<!-- still has the highlight transition code, data_foo is arbitraty right now just to demo transition-->
+<!-- state is a relic of the code this is modified from, change if you put into website -->
 
 
 <!DOCTYPE html>
@@ -43,7 +44,7 @@ var y = d3.scale.linear()
     .rangeRound([height, 0]);
 
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    .range(["#000000", "#003cb3", "#8099cc", "#009933", "#68ca89", "#d0743c", "#ff8c00"]);
 
 var xAxis = d3.svg.axis()
     .scale(x)

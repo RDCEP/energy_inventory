@@ -1,5 +1,4 @@
-<!-- Transition between the actual two bar graphs, switching activity and energy source -->
-<!-- 1/13/16 havent done this yet, still the same as index.html -->
+<!-- Transition with two different sets of values, toggle by click -->
 
 
 <!DOCTYPE html>
@@ -62,7 +61,7 @@ var svg = d3.select("body").append("svg")
 
 var highlight_transition = function highlight_transition(d) {
   
-d3.csv("data_foo.csv", function(error, data) {
+  d3.csv("data_foo.csv", function(error, data) {
     color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
 
     data.forEach(function(d) {
@@ -84,7 +83,7 @@ d3.csv("data_foo.csv", function(error, data) {
     .attr("y", function(d) { return y(d.y1); })
       .attr("height", function(d) { return y(d.y0) - y(d.y1); });
 
-    yAxis.transition().scale(y); //redo
+    yAxis.transition().scale(y);
 
   });
   
