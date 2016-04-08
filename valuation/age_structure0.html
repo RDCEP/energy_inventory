@@ -1,0 +1,208 @@
+<!-- age structure new 1st graph setup -->
+
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="../textures.js"></script>
+<script>
+
+var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var parseDate = d3.time.format("%Y").parse;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y0 = d3.scale.linear()
+    .range([height, 0]);
+
+var y1 = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.ordinal()
+    .range(["#000000", "#003cb3", "#009933", "#667aa3", "#68ca89", "#ff8c00"]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxisLeft = d3.svg.axis()
+    .scale(y0)
+    .orient("left");
+
+var yAxisRight = d3.svg.axis()
+    .scale(y1)
+    .orient("right");
+
+var line = d3.svg.line()
+    .interpolate("basis")			// basis creates smoothing.. other options as well like step-before, cardinal
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y0(d.dollars1); })
+    .defined(function(d) { return !isNaN(d.dollars1); });  //allows for gaps in lines with NaN values
+
+var line2 = d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y1(d.dollars2); }); // <== y1
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("age_structure0_data.csv", function(error, data) {
+  if (error) throw error;
+
+  var forLegend = d3.keys(data[0]).filter(function(key) { return key !== "date"; });
+
+  color.domain(forLegend);
+
+  data.forEach(function(d) {
+    d.date = parseDate(d.date);
+  });
+
+  var energyTypes = color.domain().map(function(name) {
+    return {
+      name: name,
+      values: data.map(function(d) {
+        console.log(name);
+        if (name == 'Gas Pipelines' || name == 'Oil Pipelines') {
+          return {date: d.date, dollars1: NaN, dollars2: +d[name]};
+        } else {
+          return {date: d.date, dollars1: +d[name], dollars2: NaN};
+        }
+      })
+    };
+  });
+console.log(energyTypes);
+
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+
+  y0.domain([
+    0, //d3.min(energyTypes[0,3].values, function(c) { return c.dollars1; }),
+    70//d3.max(energyTypes[0,3].values, function(c) { return c.dollars1; })
+  ]);
+
+  y1.domain([
+    0, //d3.min(energyTypes[4].values, function(c) { return c.dollars2; }),
+    14//d3.max(energyTypes[4].values, function(c) { return c.dollars2; })
+  ]);
+
+    var gasPipelineLegendTexture = textures.lines()
+      .lighter()
+      .size(5)
+      .strokeWidth(1.2)
+      .stroke('#667aa3');
+
+    var oilPipelineLegendTexture = textures.lines()
+      .lighter()
+      .size(5)
+      .strokeWidth(1.2)
+      .stroke('#68ca89'); 
+
+    svg.call(gasPipelineLegendTexture)
+       .call(oilPipelineLegendTexture);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxisLeft)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -40)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Power Plants ($ Billion 2012)");//or Total Mileage (Pipeline) Built Each Year");
+
+svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + width + " ,0)")  
+      .call(yAxisRight)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 30)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Pipelines ($ Billion 2012)");//or Total Mileage (Pipeline) Built Each Year");
+
+  var energyType = svg.selectAll(".energyType")
+      .data(energyTypes)
+    .enter().append("g")
+      .attr("class", "energyType");
+
+  energyType.append("path")
+      .attr("class", "line")
+      .attr("d", function(d) { return line(d.values); })
+      .style("stroke-width", 2)
+      .style("stroke", function(d) { return color(d.name); })
+      .style("stroke-dasharray", "0,0");
+
+    energyType.append("path")
+      .attr("class", "line")
+      .attr("d", function(d) { return line2(d.values); })
+      .style("stroke-width", 2)
+      .style("stroke", function(d) { return color(d.name); })
+      .style("stroke-dasharray", "3,3");
+
+
+  // legend creation
+  var legend = svg.selectAll(".legend")
+      .data(forLegend.slice().reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 32)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d) { 
+            if (color(d) == "#667aa3")
+              return gasPipelineLegendTexture.url();
+            else if (color(d) == "#68ca89")
+              return oilPipelineLegendTexture.url();
+            else
+              return color(d); 
+          });
+
+  legend.append("text")
+      .attr("x", width - 38)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+});
+
+</script>

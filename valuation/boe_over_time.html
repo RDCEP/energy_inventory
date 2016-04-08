@@ -1,0 +1,184 @@
+<!-- age structure 1st graph setup -->
+<!-- city is a relic of the code this is modified from, change to more relevant name if you put into website -->
+
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="../textures.js"></script>
+<script>
+
+var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var parseDate = d3.time.format("%Y").parse;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 140]); // second array element was originally 0 (top of view box)
+
+var color = d3.scale.ordinal()
+    .range(["#00050f", "#568cb4", "#f0c55d", "#060f4d", "#96a0b6", "#d47d9c", "#ff8c00"]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5);
+
+var line = d3.svg.line()
+    .interpolate("basis")			// basis creates smoothing.. other options as well like step-before, cardinal
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.temperature); })
+    .defined(function(d) { return !isNaN(d.temperature); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("boe_over_time.csv", function(error, data) {
+  if (error) throw error;
+
+  var forLegend = d3.keys(data[0]).filter(function(key) { return key !== "date"; });
+
+  color.domain(forLegend);
+
+  data.forEach(function(d) {
+    d.date = parseDate(d.date);
+  });
+
+  var cities = color.domain().map(function(name) {
+    return {
+      name: name,
+      values: data.map(function(d) {
+        return {date: d.date, temperature: +d[name]};
+      })
+    };
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+
+  y.domain([
+    d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
+    d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
+  ]);
+
+  var green = textures.lines()
+      .lighter()
+      .size(5)
+      .strokeWidth(1.2)
+      .stroke('#060f4d'); //#3D00FF
+
+      var blue = textures.lines()
+      .lighter()
+      .size(5)
+      .strokeWidth(1.2)
+      .stroke('#96a0b6'); //#3D00FF
+
+      var grey = textures.lines()
+      .lighter()
+      .size(5)
+      .strokeWidth(1.2)
+      .stroke('#d47d9c'); //#3D00FF
+
+    svg.call(green)
+       .call(blue)
+       .call(grey);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 8)
+      .attr("x", -140)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("$ / BOE, 2012 dollars");
+
+  var city = svg.selectAll(".city")
+      .data(cities)
+    .enter().append("g")
+      .attr("class", "city");
+
+  city.append("path")
+      .attr("class", "line")
+      .attr("d", function(d) { return line(d.values); })
+      .style("stroke-width", 2)
+      .style("stroke", function(d) { return color(d.name); })
+      .style("stroke-dasharray", function (d) {
+                  if (d.name === "Rest of World - EIA EvaluateEnergy expenditure (finding, development)" || d.name === "Rest of World - EIA EvaluateEnergy expenditure (finding, development, and production)"|| d.name === "Rest of World - PwC, capital cost")
+                      return "3,3";
+                  else 
+                      return "0,0";
+        });
+
+  // legend creation
+  var legend = svg.selectAll(".legend")
+      .data(forLegend.slice().reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d) { 
+            if (color(d) == "#060f4d")
+              return green.url();
+            else if (color(d) == "#96a0b6")
+              return blue.url();
+            else if (color(d) == "#d47d9c")
+              return grey.url();
+            else
+              return color(d); 
+          });
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+});
+
+</script>
