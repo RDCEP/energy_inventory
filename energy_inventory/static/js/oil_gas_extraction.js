@@ -6,13 +6,13 @@
 
       width = 900
     , height = 450
-    , padding = {top: 10, right: 10, bottom: 50, left: 50}
+    , padding = {top: 10, right: 50, bottom: 20, left: 10}
 
     // create projection and path objects with which to draw geo objects
 
     , projection = d3.geo.albersUsa()
         .scale(1000)
-        .translate([width / 2, height / 2])
+        .translate([width / 2 - 50, height / 2])
     , path = d3.geo.path()
         .projection(projection)
         .pointRadius(0.3)
@@ -70,9 +70,12 @@
       .data(map_data.features)
       .enter()
       .append('path')
-      .attr('class', 'map-boundary boundary')
+      .attr('class', 'state map-boundary boundary')
       .attr('d', path)
-      .style('fill', '#FCFCFC');
+      // .style('fill', '#FCFCFC');
+      .style('fill', function(d) { return d.properties['NAME'] == 'Texas' ? '#ececec' : '#FCFCFC'; });
+
+
 
     // map points
 
@@ -126,7 +129,7 @@
       square = d3.svg.symbol().type('square')();
 
     var symbolScale =  d3.scale.ordinal()
-      .domain(["Offshore Wells", "Unconventional Wells", "Conventional Wells"])
+      .domain(["Offshore wells", "Oil and gas basins", "Conventional wells"])
       .range([circle, circle]);
 
     var symbolColorScale = ['#66667f', '#ff8e93', '#45a7c6'];
@@ -136,24 +139,24 @@
     //create a background box for the legend
     var rectangle = svg.append("rect")
       .attr("x", 10)
-      .attr("y", 10)
-      .attr("width", 147)
-      .attr("height", 50)
+      .attr("y", 20)
+      .attr("width", 240)
+      .attr("height", 75)
       .style('fill', '#FCFCFC')
-      .attr("transform", "translate(790,406)");
+      .attr("transform", "translate("+650+","+305+")");
 
     svg.append("g")
       .attr("class", "legendSymbol")
       .style('font-family', 'sans-serif')
-      .style('font-size', '10px')
+      .style('font-size', '15px')
       .style('fill', '#545454')
-      .attr("transform", "translate(820,428)");
+      .attr("transform", "translate("+680+","+345+")");
 
     var legendPath = d3.legend.symbol()
       .scale(symbolScale)
       .orient("vertical")
-      .shapePadding(4)
-      .labelOffset(0);
+      .shapePadding(10)
+      .labelOffset(1);
       //.title("Symbol Legend Title")
       //.on("cellclick", function(d){alert("clicked " + d);});
 
@@ -171,7 +174,7 @@
     .defer(d3.json, '/static/json/gz_2010_us_040_00_20m.json')
     .defer(d3.json, '/static/json/Oil_Gas_Active_Platforms.geojson')
     .defer(d3.json, '/static/json/TightOil_ShaleGas_US_Aug2015.geojson')
-    .defer(d3.json, '/static/json/US_OG_022014_temp.geojson')
+    .defer(d3.json, '/static/json/US_OG_022014.geojson')
 
     .awaitAll(map);
 

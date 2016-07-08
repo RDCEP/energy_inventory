@@ -6,7 +6,7 @@
 <style>
 
 body {
-  font: 12px sans-serif;
+  font: 15px sans-serif;
 }
 
 .axis path,
@@ -28,8 +28,8 @@ body {
 
 </style>
 <body>
-<script src="//d3js.org/d3.v3.min.js"></script>
-<script src="../textures.js"></script>
+<script src="./d3.v3.min.js"></script>
+<script src="./textures.js"></script>
 <script>
 
 var margin = {top: 20, right: 80, bottom: 30, left: 50},
@@ -63,14 +63,14 @@ var yAxisRight = d3.svg.axis()
     .orient("right");
 
 var line = d3.svg.line()
-    .interpolate("basis")			// basis creates smoothing.. other options as well like step-before, cardinal
+    //.interpolate("basis")			// basis creates smoothing.. other options as well like step-before, cardinal
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y0(d.dollars1); })
     .defined(function(d) { return !isNaN(d.dollars1); });  //allows for gaps in lines with NaN values
 
 var line2 = d3.svg.line()
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y1(d.dollars2); }); // <== y1
+    .y(function(d) { return y0(d.dollars2); }); // <== y1
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -108,7 +108,7 @@ console.log(energyTypes);
 
   y0.domain([
     0, //d3.min(energyTypes[0,3].values, function(c) { return c.dollars1; }),
-    70//d3.max(energyTypes[0,3].values, function(c) { return c.dollars1; })
+    80//d3.max(energyTypes[0,3].values, function(c) { return c.dollars1; })
   ]);
 
   y1.domain([
@@ -141,11 +141,12 @@ console.log(energyTypes);
       .call(yAxisLeft)
     .append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", -40)
+      .attr("y", 10)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Power Plants ($ Billion 2012)");//or Total Mileage (Pipeline) Built Each Year");
+      .text("Power Plants / Pipelines ($ Billion 2012)");//or Total Mileage (Pipeline) Built Each Year");
 
+/*
 svg.append("g")
       .attr("class", "y axis")
       .attr("transform", "translate(" + width + " ,0)")  
@@ -156,7 +157,7 @@ svg.append("g")
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Pipelines ($ Billion 2012)");//or Total Mileage (Pipeline) Built Each Year");
-
+*/
   var energyType = svg.selectAll(".energyType")
       .data(energyTypes)
     .enter().append("g")
@@ -182,7 +183,7 @@ svg.append("g")
       .data(forLegend.slice().reverse())
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * 25 + ")"; });
 
   legend.append("rect")
       .attr("x", width - 32)

@@ -6,7 +6,7 @@
 <style>
  
 body {
-  font: 12px sans-serif;
+  font: 15px sans-serif;
 }
  
 .axis path,
@@ -26,11 +26,11 @@ body {
  
 </style>
 <body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-<script src="../textures.js"></script>
+<script src="./d3.v3.min.js"></script>
+<script src="./jquery-1.5.1.min.js"></script>
+<script src="./textures.js"></script>
 <script>
-var margin = {top: 20, right: 20, bottom: 50, left: 40},
+var margin = {top: 20, right: 20, bottom: 100, left: 40},
     width = 1000 - margin.left - margin.right,
     height = 510 - margin.top - margin.bottom;
  
@@ -66,22 +66,30 @@ var innerColumns = {
   "column1" : ["Oil Full Capacity","Oil Current Level"],
   "column2" : ["Natural Gas Full Capacity", "Natural Gas Current Level"],
   "column3" : ["Coal Full Capacity","Coal Current Level"]
-}
+};
  
 d3.csv("supply_chain1.csv", function(error, data) {
   var columnHeaders = d3.keys(data[0]).filter(function(key) { return key !== "State"; });
   color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
   data.forEach(function(d) {
-    var yColumn = new Array();
+    var yColumn = [];
     d.columnDetails = columnHeaders.map(function(name) {
-      for (ic in innerColumns) {
-        if($.inArray(name, innerColumns[ic]) >= 0){
-          if (!yColumn[ic]){
-            yColumn[ic] = 0;
+      for (var ic in innerColumns) {
+        if (innerColumns.hasOwnProperty(ic)) {
+          if ($.inArray(name, innerColumns[ic]) >= 0) {
+            if (!yColumn[ic]) {
+              yColumn[ic] = 0;
+            }
+            yBegin = yColumn[ic];
+            /*yColumn[ic] += +d[name];*/
+            /*if we want the columns to be STACKED on top of each other, this is how*/
+            return {
+              name: name,
+              column: ic,
+              yBegin: yBegin,
+              yEnd: +d[name] + yBegin
+            };
           }
-          yBegin = yColumn[ic];
-          /*yColumn[ic] += +d[name];*/      /*if we want the columns to be STACKED on top of each other, this is how*/
-          return {name: name, column: ic, yBegin: yBegin, yEnd: +d[name] + yBegin,};
         }
       }
     });
@@ -134,7 +142,7 @@ d3.csv("supply_chain1.csv", function(error, data) {
       .attr("y", 6)
       .attr("dy", ".7em")
       .style("text-anchor", "end")
-      .text("US $ Per Watt, 2012");
+      .text("US $ per Watt, 2012");
  
   var project_stackedbar = svg.selectAll(".project_stackedbar")
       .data(data)
@@ -171,10 +179,11 @@ d3.csv("supply_chain1.csv", function(error, data) {
       .data(columnHeaders.slice().reverse())
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * 25 + ")"; });
  
   legend.append("rect")
-      .attr("x", width - 145)
+      //.attr("x", width - 145)
+      .attr("x", 75)
       .attr("width", 18)
       .attr("height", 18)
       .style("fill", function(d) { 
@@ -189,7 +198,8 @@ d3.csv("supply_chain1.csv", function(error, data) {
           });
  
   legend.append("text")
-      .attr("x", width - 120)
+      //.attr("x", width - 120)
+      .attr("x", 100)
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("text-anchor", "start")

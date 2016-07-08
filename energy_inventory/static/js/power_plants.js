@@ -6,13 +6,13 @@
 
       width = 900
     , height = 450
-    , padding = {top: 10, right: 10, bottom: 50, left: 50}
+    , padding = {top: 10, right: 50, bottom: 20, left: 10}
 
     // create projection and path objects with which to draw geo objects
 
     , projection = d3.geo.albersUsa()
         .scale(1000)
-        .translate([width / 2, height / 2])
+        .translate([width / 2 - 50, height / 2])
     , path = d3.geo.path()
         .projection(projection)
         .pointRadius(1.2)
@@ -80,7 +80,7 @@
       .attr('transform', function(d) {
         return "translate(" + projection([d.geometry.coordinates[0],d.geometry.coordinates[1]]) + ")";
       })
-      .attr('d', d3.svg.symbol().type("square").size(5))
+      .attr('d', d3.svg.symbol().type("square").size(8))
       //.attr('class', 'site')
       .style('fill', '#040d14');
       //.attr('d', path /*function(d) { return path.pointRadius/*(d.properties.PADD)(d);}*/);  //ex: for the biodiesel json file, adjust radius size based on PADD attribute
@@ -117,12 +117,13 @@
 
     //susie lu's legend work
     
-    var triangleU = d3.svg.symbol().type('triangle-up')(),
-        circle = d3.svg.symbol().type('circle')()
-        square = d3.svg.symbol().type('square')()
+    var triangleU = d3.svg.symbol().type('triangle-up')()
+      , circle = d3.svg.symbol().type('circle')()
+      , square = d3.svg.symbol().type('square')()
+    ;
 
     var symbolScale =  d3.scale.ordinal()
-      .domain(["Coal", "Natural Gas", "Petroleum"])
+      .domain(["Coal", "Natural gas", "Petroleum"])
       .range([square, square, square]);
 
     var symbolColorScale = ['#040d14', '#44aaff', '#ff9944'];
@@ -132,23 +133,23 @@
     //create a background box for the legend
     var rectangle = svg.append("rect")
       .attr("x", 10)
-      .attr("y", 10)
-      .attr("width", 109)
-      .attr("height", 52)
+      .attr("y", 20)
+      .attr("width", 200)
+      .attr("height", 70)
       .style('fill', '#FCFCFC')
-      .attr("transform", "translate(828,404)");
+      .attr("transform", "translate("+670+","+310+")");
 
     svg.append("g")
       .attr("class", "legendSymbol")
       .style('font-family', 'sans-serif')
-      .style('font-size', '10px')
+      .style('font-size', '15px')
       .style('fill', '#545454')
-      .attr("transform", "translate(855,426)");
+      .attr("transform", "translate("+695+","+347+")");
 
     var legendPath = d3.legend.symbol()
       .scale(symbolScale)
       .orient("vertical")
-      .shapePadding(5)
+      .shapePadding(10)
       .labelOffset(1);
       //.title("Symbol Legend Title")
       //.on("cellclick", function(d){alert("clicked " + d);});

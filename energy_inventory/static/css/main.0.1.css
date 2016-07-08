@@ -6,4 +6,10 @@ a {
   color: inherit;
   text-decoration: none; }
 
+
+#map_wrap {
+  width: 920px;
+  /*height: 540px;*/
+  background:#c2c2c2;
+}
 /*# sourceMappingURL=main.0.1.css.map */

@@ -7,7 +7,7 @@
 <style>
 
 body {
-  font: 10px sans-serif;
+  font: 15px sans-serif;
 }
 
 .axis path,
@@ -74,7 +74,7 @@ d3.csv("data_by_service_life.csv", function(error, data) {
   //data.sort(function(a, b) { return b.total - a.total; });   //we want the age groups in their given order
 
   x.domain(data.map(function(d) { return d.State; }));
-  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+  y.domain([0, 3.7]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -112,7 +112,7 @@ d3.csv("data_by_service_life.csv", function(error, data) {
       .data(color.domain().slice().reverse())
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * 25 + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
