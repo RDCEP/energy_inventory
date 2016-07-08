@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+
+{% block headcss %}
+{{ super() }}
+  <style>
+    .state-48 { fill: #ddd; }
+  </style>
+{% endblock %}
+
+{% block headjs %}
+{{ super() }}
+<script src="../static/js/textures.js"></script>
+{% endblock %}
+
+{% block bodyjs %}
+<script src={{ url_for('energy_inventory.static', filename='js/oil_gas_extraction.js') }}></script>
+{% endblock %}

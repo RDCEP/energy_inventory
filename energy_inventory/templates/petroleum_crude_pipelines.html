@@ -1,0 +1,6 @@
+{% extends 'index.html' %}
+
+{% block bodyjs %}
+<script src={{ url_for('energy_inventory.static', filename='js/ei.map_globals.v1.js') }}></script>
+<script src={{ url_for('energy_inventory.static', filename='js/ei.petro_pipes.v1.js') }}></script>
+{% endblock %}
